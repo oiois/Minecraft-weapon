@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dark Glaive — Preview</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#04040f; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; font-family:'Courier New',monospace; }
+  canvas { display:block; }
+  #ui { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+  #title { position:absolute; top:22px; left:50%; transform:translateX(-50%); text-align:center; }
+  #title h1 { font-size:15px; letter-spacing:6px; color:#ccccff; text-shadow:0 0 18px #6655ff; text-transform:uppercase; }
+  #title p  { font-size:10px; letter-spacing:3px; color:#44446a; margin-top:4px; }
+  #legend { position:absolute; top:22px; right:22px; font-size:10px; letter-spacing:1px; line-height:2; color:#aaaadd; }
+  .leg { display:flex; align-items:center; gap:8px; }
+  .dot { width:8px; height:8px; border-radius:2px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div id="title"><h1>Dark Glaive</h1><p>3D Frame · No Color</p></div>
+  <div id="legend">
+    <div class="leg"><div class="dot" style="background:#4488ff"></div> Handle</div>
+    <div class="leg"><div class="dot" style="background:#ff3344"></div> Blade</div>
+    <div class="leg"><div class="dot" style="background:#cc44ff"></div> Decorations</div>
+    <div class="leg"><div class="dot" style="background:#ffaa22"></div> Pommel</div>
+  </div>
+</div>
+<script>
+const W = 1280, H = 720;
+const canvas = document.getElementById('c');
+canvas.width  = W;
+canvas.height = H;
+const ctx = canvas.getContext('2d');
+
+// ── Bone colours ──────────────────────────────────────────────────────────────
+const COL = {
+  handle:      '#4488ff',
+  blade:       '#ff3344',
+  decorations: '#cc44ff',
+  pommel:      '#ffaa22'
+};
+
+// ── All cubes  [ox, oy, oz,  sx, sy, sz,  bone] ───────────────────────────────
+const CUBES = [
+  // handle
+  [-1,-14,-1, 2,24,2, 'handle'],
+  [-2,-10,-2, 4, 2,4, 'handle'],
+  [-2, -3,-2, 4, 2,4, 'handle'],
+  [-2,  5,-2, 4, 2,4, 'handle'],
+  // blade — collar
+  [-3,  8,-2, 6, 4,4, 'blade'],
+  // blade — staircase slices
+  [-2,  8,-1,  7,2,2, 'blade'],
+  [-3, 10,-1, 12,2,2, 'blade'],
+  [-4, 12,-1, 17,2,2, 'blade'],
+  [-5, 14,-1, 21,2,2, 'blade'],
+  [-4, 16,-1, 22,2,2, 'blade'],
+  [-3, 18,-1, 21,2,2, 'blade'],
+  [-1, 20,-1, 17,2,2, 'blade'],
+  [ 1, 22,-1, 13,2,2, 'blade'],
+  [ 3, 24,-1,  8,2,2, 'blade'],
+  [ 4, 26,-1,  4,2,2, 'blade'],
+  [ 3, 28,-1,  3,2,2, 'blade'],
+  // blade — cutting-edge accents
+  [13,12,-2, 2,6,1, 'blade'],
+  [15,16,-2, 2,5,1, 'blade'],
+  [13,20,-2, 2,5,1, 'blade'],
+  // blade — spine
+  [-1,10, 1, 2,20,1, 'blade'],
+  // counter-blade
+  [-12,12,-1,  8,2,2, 'blade'],
+  [-15,14,-1, 10,2,2, 'blade'],
+  [-14,16,-1, 10,2,2, 'blade'],
+  [-10,18,-1,  7,2,2, 'blade'],
+  [ -7,20,-1,  4,2,2, 'blade'],
+  // decorations — wings
+  [-6, -4,-1,  2,12,2, 'decorations'],
+  [-4, -3,-1,  2,11,2, 'decorations'],
+  [ 2, -3,-1,  2,11,2, 'decorations'],
+  [ 4, -4,-1,  2,12,2, 'decorations'],
+  // decorations — feathers
+  [-8, -6,-0.5, 2,9,1, 'decorations'],
+  [ 6, -6,-0.5, 2,9,1, 'decorations'],
+  [-1, -5,-0.5, 2,8,1, 'decorations'],
+  [-6,-10,-0.5, 2,5,1, 'decorations'],
+  [ 4,-10,-0.5, 2,5,1, 'decorations'],
+  [-1,-11,-0.5, 2,4,1, 'decorations'],
+  // pommel
+  [-3,-20,-3, 6,6,6, 'pommel'],
+  [-4,-17,-4, 8,2,8, 'pommel'],
+  [-2,-22,-2, 4,3,4, 'pommel'],
+  [-1,-25,-1, 2,4,2, 'pommel'],
+  [-0.5,-27,-0.5, 1,2,1, 'pommel']
+];
+
+// ── 3D → 2D orthographic projection ──────────────────────────────────────────
+const YAW   = 28 * Math.PI / 180;   // rotate around Y
+const PITCH = 18 * Math.PI / 180;   // tilt around X
+const SCALE = 11;
+const CX = W / 2 - 20;
+const CY = H / 2 + 85;
+
+const cosY = Math.cos(YAW),  sinY = Math.sin(YAW);
+const cosP = Math.cos(PITCH), sinP = Math.sin(PITCH);
+
+function proj(x, y, z) {
+  const x1 =  x * cosY + z * sinY;
+  const y1 =  y;
+  const z1 = -x * sinY + z * cosY;
+  const x2 = x1;
+  const y2 = y1 * cosP - z1 * sinP;
+  const z2 = y1 * sinP + z1 * cosP;  // depth (for sorting)
+  return { sx: CX + x2 * SCALE, sy: CY - y2 * SCALE, depth: z2 };
+}
+
+// ── Cube helpers ──────────────────────────────────────────────────────────────
+function verts(ox, oy, oz, sx, sy, sz) {
+  return [
+    proj(ox,    oy,    oz   ),  // 0 front-bottom-left
+    proj(ox+sx, oy,    oz   ),  // 1 front-bottom-right
+    proj(ox+sx, oy+sy, oz   ),  // 2 front-top-right
+    proj(ox,    oy+sy, oz   ),  // 3 front-top-left
+    proj(ox,    oy,    oz+sz),  // 4 back-bottom-left
+    proj(ox+sx, oy,    oz+sz),  // 5 back-bottom-right
+    proj(ox+sx, oy+sy, oz+sz),  // 6 back-top-right
+    proj(ox,    oy+sy, oz+sz),  // 7 back-top-left
+  ];
+}
+
+// Visible faces for camera looking from +X +Z +Y direction
+const FACES = [
+  { idx:[3,2,6,7], bright:1.00 },  // top
+  { idx:[1,2,6,5], bright:0.65 },  // right (+X)
+  { idx:[4,5,6,7], bright:0.40 },  // back (+Z)
+];
+const EDGES_12 = [
+  [0,1],[1,2],[2,3],[3,0],
+  [4,5],[5,6],[6,7],[7,4],
+  [0,4],[1,5],[2,6],[3,7]
+];
+
+// ── Compute sort depth for each cube ─────────────────────────────────────────
+const sorted = CUBES.map(c => {
+  const cx = c[0]+c[3]/2, cy = c[1]+c[4]/2, cz = c[2]+c[5]/2;
+  const d  = proj(cx, cy, cz).depth;
+  return { c, depth: d };
+}).sort((a,b) => a.depth - b.depth);  // back→front
+
+// ── Draw ─────────────────────────────────────────────────────────────────────
+// Background
+ctx.fillStyle = '#04040f';
+ctx.fillRect(0, 0, W, H);
+
+// Grid — project a flat XZ plane at y=-28
+ctx.strokeStyle = '#0c0c22';
+ctx.lineWidth = 1;
+const GRID = 8, GSIZE = 10;
+for (let i = -GRID; i <= GRID; i++) {
+  const a = proj(i*GSIZE, -28,  -GRID*GSIZE);
+  const b = proj(i*GSIZE, -28,   GRID*GSIZE);
+  const c2 = proj(-GRID*GSIZE, -28, i*GSIZE);
+  const d  = proj( GRID*GSIZE, -28, i*GSIZE);
+  ctx.beginPath(); ctx.moveTo(a.sx,a.sy); ctx.lineTo(b.sx,b.sy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(c2.sx,c2.sy); ctx.lineTo(d.sx,d.sy); ctx.stroke();
+}
+
+// Weapon cubes
+for (const { c } of sorted) {
+  const [ox,oy,oz,sx,sy,sz,bone] = c;
+  const color = COL[bone] || '#8888ff';
+  const v = verts(ox, oy, oz, sx, sy, sz);
+
+  // --- filled faces (very subtle) ---
+  for (const face of FACES) {
+    const alpha = 0.055 * face.bright;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    face.idx.forEach((vi, i) => {
+      if (i === 0) ctx.moveTo(v[vi].sx, v[vi].sy);
+      else         ctx.lineTo(v[vi].sx, v[vi].sy);
+    });
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // --- glow pass (thick, dim) ---
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  for (const [a,b] of EDGES_12) {
+    ctx.moveTo(v[a].sx, v[a].sy);
+    ctx.lineTo(v[b].sx, v[b].sy);
+  }
+  ctx.stroke();
+
+  // --- sharp edge pass ---
+  ctx.globalAlpha = 0.92;
+  ctx.lineWidth = 1.1;
+  ctx.beginPath();
+  for (const [a,b] of EDGES_12) {
+    ctx.moveTo(v[a].sx, v[a].sy);
+    ctx.lineTo(v[b].sx, v[b].sy);
+  }
+  ctx.stroke();
+
+  ctx.globalAlpha = 1;
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+ctx.fillStyle = '#222244';
+ctx.font = '10px Courier New';
+ctx.textAlign = 'left';
+ctx.fillText(`Cubes : ${CUBES.length}`, 22, H - 36);
+ctx.fillText(`Bones : 5`, 22, H - 22);
+</script>
+</body>
+</html>
