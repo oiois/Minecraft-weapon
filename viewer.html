@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Glaive — 3D Frame</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #04040f;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #aaaadd;
+    }
+
+    canvas { display: block; }
+
+    #title {
+      position: fixed;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    #title h1 {
+      font-size: 15px;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #ccccff;
+      text-shadow: 0 0 18px #6655ff;
+    }
+    #title p {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #44446a;
+      margin-top: 4px;
+    }
+
+    #legend {
+      position: fixed;
+      top: 22px;
+      right: 22px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      line-height: 2;
+      pointer-events: none;
+    }
+    .leg-row { display: flex; align-items: center; gap: 8px; }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    #hint {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #222244;
+      pointer-events: none;
+    }
+
+    #stats {
+      position: fixed;
+      bottom: 18px;
+      right: 22px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: #222244;
+      line-height: 1.8;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="title">
+  <h1>Dark Glaive</h1>
+  <p>3D Frame · No Color</p>
+</div>
+
+<div id="legend">
+  <div class="leg-row"><div class="dot" style="background:#4488ff;box-shadow:0 0 6px #4488ff"></div> Handle</div>
+  <div class="leg-row"><div class="dot" style="background:#ff3344;box-shadow:0 0 6px #ff3344"></div> Blade</div>
+  <div class="leg-row"><div class="dot" style="background:#cc44ff;box-shadow:0 0 6px #cc44ff"></div> Decorations</div>
+  <div class="leg-row"><div class="dot" style="background:#ffaa22;box-shadow:0 0 6px #ffaa22"></div> Pommel</div>
+</div>
+
+<div id="hint">Drag · Rotate &nbsp;|&nbsp; Scroll · Zoom &nbsp;|&nbsp; Right-drag · Pan &nbsp;|&nbsp; A · Toggle auto-spin</div>
+
+<div id="stats">
+  <div id="stat-cubes"></div>
+  <div id="stat-bones"></div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─── Embedded geometry ───────────────────────────────────────────────────────
+const GEO = {
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.weapon.dark_glaive",
+        "texture_width": 128,
+        "texture_height": 128
+      },
+      "bones": [
+        { "name": "root", "pivot": [0, 0, 0] },
+
+        {
+          "name": "handle",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            { "origin": [-1, -14, -1], "size": [2, 24, 2] },
+            { "origin": [-2, -10, -2], "size": [4,  2, 4] },
+            { "origin": [-2,  -3, -2], "size": [4,  2, 4] },
+            { "origin": [-2,   5, -2], "size": [4,  2, 4] }
+          ]
+        },
+
+        {
+          "name": "blade",
+          "parent": "root",
+          "pivot": [0, 10, 0],
+          "cubes": [
+            { "origin": [-3,  8, -2], "size": [ 6, 4, 4] },
+            { "origin": [-2,  8, -1], "size": [ 7, 2, 2] },
+            { "origin": [-3, 10, -1], "size": [12, 2, 2] },
+            { "origin": [-4, 12, -1], "size": [17, 2, 2] },
+            { "origin": [-5, 14, -1], "size": [21, 2, 2] },
+            { "origin": [-4, 16, -1], "size": [22, 2, 2] },
+            { "origin": [-3, 18, -1], "size": [21, 2, 2] },
+            { "origin": [-1, 20, -1], "size": [17, 2, 2] },
+            { "origin": [ 1, 22, -1], "size": [13, 2, 2] },
+            { "origin": [ 3, 24, -1], "size": [ 8, 2, 2] },
+            { "origin": [ 4, 26, -1], "size": [ 4, 2, 2] },
+            { "origin": [ 3, 28, -1], "size": [ 3, 2, 2] },
+            { "origin": [13, 12, -2], "size": [ 2, 6, 1] },
+            { "origin": [15, 16, -2], "size": [ 2, 5, 1] },
+            { "origin": [13, 20, -2], "size": [ 2, 5, 1] },
+            { "origin": [-1, 10,  1], "size": [ 2,20, 1] },
+            { "origin": [-12, 12, -1], "size": [ 8, 2, 2] },
+            { "origin": [-15, 14, -1], "size": [10, 2, 2] },
+            { "origin": [-14, 16, -1], "size": [10, 2, 2] },
+            { "origin": [-10, 18, -1], "size": [ 7, 2, 2] },
+            { "origin": [ -7, 20, -1], "size": [ 4, 2, 2] }
+          ]
+        },
+
+        {
+          "name": "decorations",
+          "parent": "root",
+          "pivot": [0, 6, 0],
+          "cubes": [
+            { "origin": [-6,  -4, -1  ], "size": [2, 12, 2] },
+            { "origin": [-4,  -3, -1  ], "size": [2, 11, 2] },
+            { "origin": [ 2,  -3, -1  ], "size": [2, 11, 2] },
+            { "origin": [ 4,  -4, -1  ], "size": [2, 12, 2] },
+            { "origin": [-8,  -6, -0.5], "size": [2,  9, 1] },
+            { "origin": [ 6,  -6, -0.5], "size": [2,  9, 1] },
+            { "origin": [-1,  -5, -0.5], "size": [2,  8, 1] },
+            { "origin": [-6, -10, -0.5], "size": [2,  5, 1] },
+            { "origin": [ 4, -10, -0.5], "size": [2,  5, 1] },
+            { "origin": [-1, -11, -0.5], "size": [2,  4, 1] }
+          ]
+        },
+
+        {
+          "name": "pommel",
+          "parent": "root",
+          "pivot": [0, -14, 0],
+          "cubes": [
+            { "origin": [-3,   -20, -3  ], "size": [6, 6, 6] },
+            { "origin": [-4,   -17, -4  ], "size": [8, 2, 8] },
+            { "origin": [-2,   -22, -2  ], "size": [4, 3, 4] },
+            { "origin": [-1,   -25, -1  ], "size": [2, 4, 2] },
+            { "origin": [-0.5, -27, -0.5], "size": [1, 2, 1] }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// ─── Bone colours ────────────────────────────────────────────────────────────
+const BONE_COLOR = {
+  root:        0x888888,
+  handle:      0x4488ff,
+  blade:       0xff3344,
+  decorations: 0xcc44ff,
+  pommel:      0xffaa22
+};
+
+const BONE_GLOW = {
+  handle:      '#4488ff',
+  blade:       '#ff3344',
+  decorations: '#cc44ff',
+  pommel:      '#ffaa22'
+};
+
+// ─── Scene setup ─────────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x04040f);
+scene.fog = new THREE.FogExp2(0x04040f, 0.008);
+
+const W = window.innerWidth, H = window.innerHeight;
+const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 600);
+camera.position.set(35, 4, 95);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(W, H);
+document.body.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 2, 0);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 1.2;
+controls.minDistance = 20;
+controls.maxDistance = 250;
+
+// ─── Grid ────────────────────────────────────────────────────────────────────
+const grid = new THREE.GridHelper(120, 24, 0x0f0f28, 0x0a0a1e);
+grid.position.y = -28;
+scene.add(grid);
+
+// vertical axis line
+const axisGeo = new THREE.BufferGeometry().setFromPoints([
+  new THREE.Vector3(0, -28, 0), new THREE.Vector3(0, 32, 0)
+]);
+const axisLine = new THREE.Line(axisGeo, new THREE.LineBasicMaterial({ color: 0x111133, transparent: true, opacity: 0.5 }));
+scene.add(axisLine);
+
+// ─── Build model ─────────────────────────────────────────────────────────────
+const geoDesc = GEO['minecraft:geometry'][0];
+let totalCubes = 0;
+let totalBones = 0;
+
+geoDesc.bones.forEach(bone => {
+  if (!bone.cubes) return;
+  totalBones++;
+
+  const hexColor  = BONE_COLOR[bone.name] ?? 0x8888ff;
+  const threeColor = new THREE.Color(hexColor);
+
+  const faceMat = new THREE.MeshBasicMaterial({
+    color: threeColor,
+    transparent: true,
+    opacity: 0.07,
+    depthWrite: false,
+    side: THREE.FrontSide
+  });
+
+  const edgeMat = new THREE.LineBasicMaterial({
+    color: threeColor,
+    transparent: true,
+    opacity: 1.0
+  });
+
+  bone.cubes.forEach(cube => {
+    const [ox, oy, oz] = cube.origin;
+    const [sx, sy, sz] = cube.size;
+    totalCubes++;
+
+    const boxGeo = new THREE.BoxGeometry(sx, sy, sz);
+    const cx = ox + sx / 2;
+    const cy = oy + sy / 2;
+    const cz = oz + sz / 2;
+
+    // translucent face fill
+    const mesh = new THREE.Mesh(boxGeo, faceMat);
+    mesh.position.set(cx, cy, cz);
+    scene.add(mesh);
+
+    // bright edge lines
+    const edgeGeo = new THREE.EdgesGeometry(boxGeo, 0);
+    const lines = new THREE.LineSegments(edgeGeo, edgeMat);
+    lines.position.set(cx, cy, cz);
+    scene.add(lines);
+  });
+});
+
+document.getElementById('stat-cubes').textContent = `Cubes : ${totalCubes}`;
+document.getElementById('stat-bones').textContent = `Bones : ${totalBones}`;
+
+// ─── Subtle bloom-like point lights per bone center ───────────────────────────
+[
+  [0,  0, 0, 0x4488ff, 0.4],   // handle origin
+  [0, 19, 0, 0xff3344, 0.6],   // blade peak
+  [0, -4, 0, 0xcc44ff, 0.3],   // decorations
+  [0,-18, 0, 0xffaa22, 0.5]    // pommel
+].forEach(([x, y, z, col, intensity]) => {
+  const pt = new THREE.PointLight(col, intensity, 80);
+  pt.position.set(x, y, z);
+  scene.add(pt);
+});
+
+// ─── Resize ──────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ─── Toggle auto-rotate with A key ───────────────────────────────────────────
+window.addEventListener('keydown', e => {
+  if (e.key === 'a' || e.key === 'A') {
+    controls.autoRotate = !controls.autoRotate;
+  }
+});
+
+// ─── Render loop ─────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
