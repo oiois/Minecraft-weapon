@@ -4,163 +4,95 @@
     {
       "description": {
         "identifier": "geometry.weapon.dark_glaive",
-        "texture_width": 64,
-        "texture_height": 64,
-        "visible_bounds_width": 3,
-        "visible_bounds_height": 4,
+        "texture_width": 128,
+        "texture_height": 128,
+        "visible_bounds_width": 4,
+        "visible_bounds_height": 6,
         "visible_bounds_offset": [0, 1, 0]
       },
       "bones": [
-        {
-          "name": "root",
-          "pivot": [0, 0, 0]
-        },
+
+        { "name": "root", "pivot": [0, 0, 0] },
 
         {
           "name": "handle",
           "parent": "root",
           "pivot": [0, 0, 0],
           "cubes": [
-            {
-              "comment": "main staff shaft",
-              "origin": [-1, -12, -1],
-              "size": [2, 24, 2],
-              "uv": [0, 0]
-            },
-            {
-              "comment": "grip wrap (slightly wider band)",
-              "origin": [-1.5, -4, -1.5],
-              "size": [3, 4, 3],
-              "uv": [0, 26]
-            }
+            { "origin": [-1, -14, -1], "size": [2, 24, 2],    "uv": [0, 0] },
+            { "origin": [-2, -10, -2], "size": [4,  2, 4],    "uv": [0, 0] },
+            { "origin": [-2,  -3, -2], "size": [4,  2, 4],    "uv": [0, 0] },
+            { "origin": [-2,   5, -2], "size": [4,  2, 4],    "uv": [0, 0] }
           ]
         },
 
         {
           "name": "blade",
           "parent": "root",
-          "pivot": [0, 12, 0],
+          "pivot": [0, 10, 0],
           "cubes": [
-            {
-              "comment": "base collar where blade meets handle",
-              "origin": [-2, 10, -2],
-              "size": [4, 4, 4],
-              "uv": [8, 0]
-            },
-            {
-              "comment": "lower blade body — initial sweep right",
-              "origin": [-3, 13, -1],
-              "size": [8, 4, 2],
-              "uv": [8, 12]
-            },
-            {
-              "comment": "mid blade body — wider sweep",
-              "origin": [-1, 15, -1],
-              "size": [13, 4, 2],
-              "uv": [8, 20]
-            },
-            {
-              "comment": "upper blade sweep — continues right and up",
-              "origin": [4, 17, -1],
-              "size": [13, 4, 2],
-              "uv": [0, 36]
-            },
-            {
-              "comment": "outer blade edge — vertical cutting face",
-              "origin": [8, 13, -1],
-              "size": [8, 6, 2],
-              "uv": [28, 0]
-            },
-            {
-              "comment": "blade tip — rightmost point",
-              "origin": [12, 10, -1],
-              "size": [5, 5, 2],
-              "uv": [28, 10]
-            },
-            {
-              "comment": "back counter-blade spike (leftward)",
-              "origin": [-7, 11, -1],
-              "size": [5, 4, 2],
-              "uv": [44, 0]
-            },
-            {
-              "comment": "counter-blade tip",
-              "origin": [-9, 9, -1],
-              "size": [3, 3, 2],
-              "uv": [44, 8]
-            },
-            {
-              "comment": "crown spike at top of blade",
-              "origin": [0, 20, -1],
-              "size": [3, 6, 2],
-              "uv": [52, 0]
-            }
+            { "origin": [-3,  8, -2], "size": [6,  4, 4], "uv": [0, 0] },
+
+            { "origin": [-2,  8, -1], "size": [ 7, 2, 2], "uv": [0, 0] },
+            { "origin": [-3, 10, -1], "size": [12, 2, 2], "uv": [0, 0] },
+            { "origin": [-4, 12, -1], "size": [17, 2, 2], "uv": [0, 0] },
+            { "origin": [-5, 14, -1], "size": [21, 2, 2], "uv": [0, 0] },
+            { "origin": [-4, 16, -1], "size": [22, 2, 2], "uv": [0, 0] },
+            { "origin": [-3, 18, -1], "size": [21, 2, 2], "uv": [0, 0] },
+            { "origin": [-1, 20, -1], "size": [17, 2, 2], "uv": [0, 0] },
+            { "origin": [ 1, 22, -1], "size": [13, 2, 2], "uv": [0, 0] },
+            { "origin": [ 3, 24, -1], "size": [ 8, 2, 2], "uv": [0, 0] },
+            { "origin": [ 4, 26, -1], "size": [ 4, 2, 2], "uv": [0, 0] },
+            { "origin": [ 3, 28, -1], "size": [ 3, 2, 2], "uv": [0, 0] },
+
+            { "origin": [13, 12, -2], "size": [2, 6, 1], "uv": [0, 0] },
+            { "origin": [15, 16, -2], "size": [2, 5, 1], "uv": [0, 0] },
+            { "origin": [13, 20, -2], "size": [2, 5, 1], "uv": [0, 0] },
+
+            { "origin": [-1, 10, 1],  "size": [2, 20, 1], "uv": [0, 0] },
+
+            { "origin": [-12, 12, -1], "size": [ 8, 2, 2], "uv": [0, 0] },
+            { "origin": [-15, 14, -1], "size": [10, 2, 2], "uv": [0, 0] },
+            { "origin": [-14, 16, -1], "size": [10, 2, 2], "uv": [0, 0] },
+            { "origin": [-10, 18, -1], "size": [ 7, 2, 2], "uv": [0, 0] },
+            { "origin": [ -7, 20, -1], "size": [ 4, 2, 2], "uv": [0, 0] }
           ]
         },
 
         {
           "name": "decorations",
           "parent": "root",
-          "pivot": [0, 8, 0],
+          "pivot": [0, 6, 0],
           "cubes": [
-            {
-              "comment": "left inner hanging wing",
-              "origin": [-3, 1, -1],
-              "size": [2, 9, 2],
-              "uv": [0, 40]
-            },
-            {
-              "comment": "right inner hanging wing",
-              "origin": [1, 1, -1],
-              "size": [2, 9, 2],
-              "uv": [6, 40]
-            },
-            {
-              "comment": "far left feather strand",
-              "origin": [-5, -1, -0.5],
-              "size": [2, 7, 1],
-              "uv": [12, 40]
-            },
-            {
-              "comment": "far right feather strand",
-              "origin": [3, -1, -0.5],
-              "size": [2, 7, 1],
-              "uv": [15, 40]
-            },
-            {
-              "comment": "center hanging feather",
-              "origin": [-0.5, -2, -0.5],
-              "size": [1, 6, 1],
-              "uv": [18, 40]
-            }
+            { "origin": [-6, -4,  -1],   "size": [2, 12, 2], "uv": [0, 0] },
+            { "origin": [-4, -3,  -1],   "size": [2, 11, 2], "uv": [0, 0] },
+            { "origin": [ 2, -3,  -1],   "size": [2, 11, 2], "uv": [0, 0] },
+            { "origin": [ 4, -4,  -1],   "size": [2, 12, 2], "uv": [0, 0] },
+
+            { "origin": [-8, -6, -0.5],  "size": [2,  9, 1], "uv": [0, 0] },
+            { "origin": [ 6, -6, -0.5],  "size": [2,  9, 1], "uv": [0, 0] },
+
+            { "origin": [-1, -5, -0.5],  "size": [2,  8, 1], "uv": [0, 0] },
+
+            { "origin": [-6,-10, -0.5],  "size": [2,  5, 1], "uv": [0, 0] },
+            { "origin": [ 4,-10, -0.5],  "size": [2,  5, 1], "uv": [0, 0] },
+            { "origin": [-1,-11, -0.5],  "size": [2,  4, 1], "uv": [0, 0] }
           ]
         },
 
         {
           "name": "pommel",
           "parent": "root",
-          "pivot": [0, -12, 0],
+          "pivot": [0, -14, 0],
           "cubes": [
-            {
-              "comment": "main orb body",
-              "origin": [-3, -16, -3],
-              "size": [6, 6, 6],
-              "uv": [0, 52]
-            },
-            {
-              "comment": "orb base / neck",
-              "origin": [-2, -18, -2],
-              "size": [4, 3, 4],
-              "uv": [24, 52]
-            },
-            {
-              "comment": "bottom spike / tip",
-              "origin": [-1, -21, -1],
-              "size": [2, 3, 2],
-              "uv": [40, 52]
-            }
+            { "origin": [-3, -20, -3], "size": [6, 6, 6], "uv": [0, 0] },
+            { "origin": [-4, -17, -4], "size": [8, 2, 8], "uv": [0, 0] },
+            { "origin": [-2, -22, -2], "size": [4, 3, 4], "uv": [0, 0] },
+            { "origin": [-1, -25, -1], "size": [2, 4, 2], "uv": [0, 0] },
+            { "origin": [-0.5, -27, -0.5], "size": [1, 2, 1], "uv": [0, 0] }
           ]
         }
+
       ]
     }
   ]
