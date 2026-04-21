@@ -1,0 +1,167 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.weapon.dark_glaive",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 3,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [0, 1, 0]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [0, 0, 0]
+        },
+
+        {
+          "name": "handle",
+          "parent": "root",
+          "pivot": [0, 0, 0],
+          "cubes": [
+            {
+              "comment": "main staff shaft",
+              "origin": [-1, -12, -1],
+              "size": [2, 24, 2],
+              "uv": [0, 0]
+            },
+            {
+              "comment": "grip wrap (slightly wider band)",
+              "origin": [-1.5, -4, -1.5],
+              "size": [3, 4, 3],
+              "uv": [0, 26]
+            }
+          ]
+        },
+
+        {
+          "name": "blade",
+          "parent": "root",
+          "pivot": [0, 12, 0],
+          "cubes": [
+            {
+              "comment": "base collar where blade meets handle",
+              "origin": [-2, 10, -2],
+              "size": [4, 4, 4],
+              "uv": [8, 0]
+            },
+            {
+              "comment": "lower blade body — initial sweep right",
+              "origin": [-3, 13, -1],
+              "size": [8, 4, 2],
+              "uv": [8, 12]
+            },
+            {
+              "comment": "mid blade body — wider sweep",
+              "origin": [-1, 15, -1],
+              "size": [13, 4, 2],
+              "uv": [8, 20]
+            },
+            {
+              "comment": "upper blade sweep — continues right and up",
+              "origin": [4, 17, -1],
+              "size": [13, 4, 2],
+              "uv": [0, 36]
+            },
+            {
+              "comment": "outer blade edge — vertical cutting face",
+              "origin": [8, 13, -1],
+              "size": [8, 6, 2],
+              "uv": [28, 0]
+            },
+            {
+              "comment": "blade tip — rightmost point",
+              "origin": [12, 10, -1],
+              "size": [5, 5, 2],
+              "uv": [28, 10]
+            },
+            {
+              "comment": "back counter-blade spike (leftward)",
+              "origin": [-7, 11, -1],
+              "size": [5, 4, 2],
+              "uv": [44, 0]
+            },
+            {
+              "comment": "counter-blade tip",
+              "origin": [-9, 9, -1],
+              "size": [3, 3, 2],
+              "uv": [44, 8]
+            },
+            {
+              "comment": "crown spike at top of blade",
+              "origin": [0, 20, -1],
+              "size": [3, 6, 2],
+              "uv": [52, 0]
+            }
+          ]
+        },
+
+        {
+          "name": "decorations",
+          "parent": "root",
+          "pivot": [0, 8, 0],
+          "cubes": [
+            {
+              "comment": "left inner hanging wing",
+              "origin": [-3, 1, -1],
+              "size": [2, 9, 2],
+              "uv": [0, 40]
+            },
+            {
+              "comment": "right inner hanging wing",
+              "origin": [1, 1, -1],
+              "size": [2, 9, 2],
+              "uv": [6, 40]
+            },
+            {
+              "comment": "far left feather strand",
+              "origin": [-5, -1, -0.5],
+              "size": [2, 7, 1],
+              "uv": [12, 40]
+            },
+            {
+              "comment": "far right feather strand",
+              "origin": [3, -1, -0.5],
+              "size": [2, 7, 1],
+              "uv": [15, 40]
+            },
+            {
+              "comment": "center hanging feather",
+              "origin": [-0.5, -2, -0.5],
+              "size": [1, 6, 1],
+              "uv": [18, 40]
+            }
+          ]
+        },
+
+        {
+          "name": "pommel",
+          "parent": "root",
+          "pivot": [0, -12, 0],
+          "cubes": [
+            {
+              "comment": "main orb body",
+              "origin": [-3, -16, -3],
+              "size": [6, 6, 6],
+              "uv": [0, 52]
+            },
+            {
+              "comment": "orb base / neck",
+              "origin": [-2, -18, -2],
+              "size": [4, 3, 4],
+              "uv": [24, 52]
+            },
+            {
+              "comment": "bottom spike / tip",
+              "origin": [-1, -21, -1],
+              "size": [2, 3, 2],
+              "uv": [40, 52]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
